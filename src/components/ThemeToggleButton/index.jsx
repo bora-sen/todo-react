@@ -1,38 +1,39 @@
-import React, { useEffect, useState } from 'react'
+import {React, useEffect, useState} from 'react'
 
 function ThemeToggleButton() {
+  const document_classList = document.documentElement.classList;
 
-  const [isDark,setDark] = useState(true);
+  const [theme,setTheme] = useState('light');
+
+  function switchToDark() {
+    setTheme('dark');
+    document_classList.add('dark');
+    console.log("Switched to Dark Theme");
+    localStorage.setItem('theme','dark');
+  }
+  function switchToLigt() {
+    setTheme('light')
+    document_classList.remove('dark');
+    console.log("Switched to Light Theme");
+    localStorage.setItem('theme','light');
+  }
+
 
   useEffect(() => {
-
-    console.log("Checking LocalStorage : DarkMode: "+localStorage.getItem('isDark'));
-    if(localStorage.getItem('isDark')){
-      document.documentElement.classList.add('dark');
-      setDark(true);
-    }
-    else if(!localStorage.getItem('isDark')){
-      document.documentElement.classList.remove('dark');
-      setDark(false);
+    if(localStorage.getItem('theme') === 'dark'){
+      setTheme('dark')
+      switchToDark()
     }
   },[])
 
+
   function toggleTheme(e) {
     e.preventDefault();
-
-    if(!isDark) {
-      document.documentElement.classList.add('dark');
-      setDark(true);
-      localStorage.setItem('isDark',isDark);
-      console.log("Writing to local : "+localStorage.getItem("isDark"));
-      console.log("set darkmode to "+isDark);
+    if(theme === 'light') {
+      switchToDark()
     }
-    if(isDark){
-      document.documentElement.classList.remove('dark');
-      setDark(false);
-      localStorage.setItem('isDark',isDark);
-      console.log("Writing to local : "+localStorage.getItem("isDark"));
-      console.log("set darkmode to "+isDark);
+    else if(theme === 'dark') {
+      switchToLigt()
     }
   }
 
@@ -55,7 +56,7 @@ function ThemeToggleButton() {
     </svg>
 
     <span className='font-bold text-2xl mr-4 text-white'>
-        {isDark ? "Light Mode" : "Dark Mode"}
+        {theme === 'light' ? "Light Mode" : "Dark Mode"}
     </span>
     </button>
   )
