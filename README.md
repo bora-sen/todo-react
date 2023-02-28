@@ -11,8 +11,8 @@ I used:
     - Light/Dark Theme Support
 
 ## Light Theme
-[todo](todo-ss-light.jpg)
+![todo-app-ss-light](todo-ss-light.jpg)
 
 ## Dark Theme
-[todo](todo-ss-dark.jpg)
+![todo-app-ss-dark](todo-ss-dark.jpg)
 
