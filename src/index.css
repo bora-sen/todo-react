@@ -2,8 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
-    .todo_done {
-        text-decoration: line-through;
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;700&display=swap');
+
+*{
+    font-family: 'Josefin Sans', sans-serif;
+}
+
+
+@layer components{
+    body{
+        @apply bg-light-gray dark:bg-dark-gray-blue-darker transition-all
     }
 }

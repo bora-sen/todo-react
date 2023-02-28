@@ -1,57 +1,110 @@
-import React, {useState} from 'react'
-import './App.css';
-import { ThemeToggleButton, TodoForm } from './components';
+import React, { useEffect, useState } from 'react'
+import Layout from './Components/Layout';
+import * as Assets from './Assets'
+import Fade from 'react-reveal/Fade'
+import ThemeSwitcher from './Components/ThemeSwitcher';
 
 
 export default function App() {
 
-	const [todos,setTodos] = useState([]);
+  const [TodoList,setTodoList] = useState([]);
+
+  const [TodoTitle,setTodoTitle] = useState();
 
 
-
-	function handleDone(event) {
-		let isDone = event.target.checked;
-		if(isDone) {
-			event.target.parentElement.classList.add('line-through');
-		}
-		else if(!isDone) {
-			event.target.parentElement.classList.remove('line-through');
-		}
-	}
-	function handleRemove(e,id_val) {
-		e.preventDefault();
-		let new_todos = todos.filter(todo => {return todo.id !== id_val})
-		setTodos(new_todos);
-	}
+  useEffect(() => {
+    console.log("Todolist -> ",TodoList);
+    localStorage.setItem('TodoList',TodoList);
+  },[TodoList])
+  
 
 
+  function handleEnter(e){
+    if(e.key === "Enter"){
+      addTodo(TodoTitle);
+      //console.log(TodoTitle," is added!");
+      e.target.value = "";
+    }
+  }
+
+  function addTodo(title){
+    const randNum = Math.floor(Math.random() * 1000)
+    const inputTodo = {
+        id:randNum,
+        title,
+        isComplete:false
+    }
+    setTodoList(todos => [...todos,inputTodo])
+}
+
+function HandleTodoChange(e,todo){
+  let TargetCheck = e.target.checked;
+  let parentEl = e.target.parentElement;
+
+  if(TargetCheck){
+    todo.isComplete = true;
+    console.log(TodoList);
+    parentEl.classList.add('line-through')
+  }
+  else if(!TargetCheck){
+    todo.isComplete = false;
+    console.log(TodoList);
+    parentEl.classList.remove('line-through')
+  }
+}
+
+function RemoveTodo(e,id){
+  e.preventDefault();
+  const filteredArr = TodoList.filter(todo => {return todo.id !== id});
+  setTodoList(filteredArr);
+}
+function RemoveDoneTodos(e){
+  e.preventDefault();
+  const filteredArr = TodoList.filter(todo => {return todo.isComplete !== true});
+  setTodoList(filteredArr);
+
+}
 
   return (
-		<>
-			<main className='flex flex-col justify-between lg:container lg:mx-auto p-4 h-screen bg-neutral-50 dark:bg-gray-900 dark:text-gray-200 mx-auto text-gray-900'>
-			<div className='flex items-center justify-between'>
-				<h1 className='dark:text-gray-200 text-2xl text-gray-900 text-center font-bold mb-4 mr-4'>Welcome to my Todo App (Made with React.js)</h1>
-				<ThemeToggleButton />
-			</div>
+	  <Layout>
+      <Fade>
+      <div className='p-4'>
+        <div className='flex justify-between my-[2.88rem]'>
+          <h1 className='text-3xl font-bold tracking-[.70rem] ml-8 text-light-gray'><a href="/">TODO</a></h1>
+          
+          <ThemeSwitcher />
+        </div>
 
-			<ul className='flex flex-col flex-end p-4 h-full my-4 overflow-auto'>
-				{
-				todos.map(todo => {
-					return (
-						<li key={todo.id} className="h-12 mb-4 container flex w-full bg-indigo-100 items-center dark:bg-gray-500 dark:hover:bg-gray-600">
-							<input onChange={e => {handleDone(e)}} type="checkbox" className='mx-4 w-8 h-8'/>
-							<h3 id="todo_title" className='dark:text-gray-200 text-xl'>{todo.title}</h3>
-							<button onClick={e => {handleRemove(e,todo.id)}} className="bg-indigo-600 text-white rounded px-4 hover:bg-indigo-700 transition-colors ml-auto mr-4">DELETE</button>
-						</li>
-					)
-				})}
-			</ul>
+        <div>
+        <div className='flex shadow-xl bg-light-gray dark:bg-darkest-blue-desaturated dark:text-light-gray-blue px-4 py-8 rounded-xl mb-8 '>
+          <input className='mr-2' type="checkbox" />
+          <input onKeyDown={handleEnter} onChange={e => {setTodoTitle(e.target.value)}} className='w-full text-xl p-2 bg-transparent placeholder:text-dark-gray-blue-darker focus:outline-none focus:ring-2 rounded-sm focus:ring-light-gray-blue  focus:border-dark-gray-blue' type="text" placeholder='Create a new todo..' />
+        </div>
 
+          <ul className='flex flex-col-reverse divide-y divide-y-reverse bg-white dark:bg-darkest-blue rounded-md  '>
+            {
+              TodoList.map(todo => {
+                return (
+                  <li key={todo.id} className='flex justify-between px-4 py-6 gap-2 dark:text-light-gray-blue'>
+                  <div>
+                    <input id={`check_${todo.id}`} onChange={e => {HandleTodoChange(e,todo)}} className='mr-2 ' type="checkbox"/>
+                    <label htmlFor={`check_${todo.id}`}>{todo.title}</label>
+                  </div>
+                  <button className='dark:fill-light-gray' onClick={e => {RemoveTodo(e,todo.id)}}><img src={Assets.CrossIcon} alt="cross icon" /></button>
+                </li>
+                )
+              })
+            }
 
-				<TodoForm setTodos={setTodos}/>
-			</main>
-
-		</>
+          </ul>
+          <div className='text-darkest-blue dark:text-light-gray-blue flex justify-between px-4 py-6 '>
+              <span className='ml-4'>{TodoList.length} items left</span>
+              <button onClick={e => {RemoveDoneTodos(e)}} className='mr-4'>Clear Completed</button>
+            </div>
+        </div>
+      </div>
+      </Fade>
+    </Layout>
   );
 }
 
